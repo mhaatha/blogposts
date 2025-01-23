@@ -1,8 +1,9 @@
 package blogposts
 
 import (
-	"errors"
+	"fmt"
 	"io/fs"
+	"strings"
 )
 
 func NewPostsFromFS(fileSystem fs.FS) ([]Post, error) {
@@ -12,9 +13,10 @@ func NewPostsFromFS(fileSystem fs.FS) ([]Post, error) {
 	}
 	var posts []Post
 	for _, f := range dir {
-		if f.Name()[len(f.Name())-3:] != ".md" {
-			return nil, errors.New("only accept .md file extension")
+		if !strings.HasSuffix(f.Name(), ".md") {
+			return nil, fmt.Errorf("error: only accept .md file, %v is not an .md file", f.Name())
 		}
+
 		post, err := getPost(fileSystem, f.Name())
 		if err != nil {
 			return nil, err
