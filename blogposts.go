@@ -1,6 +1,7 @@
 package blogposts
 
 import (
+	"errors"
 	"io/fs"
 )
 
@@ -11,9 +12,12 @@ func NewPostsFromFS(fileSystem fs.FS) ([]Post, error) {
 	}
 	var posts []Post
 	for _, f := range dir {
+		if f.Name()[len(f.Name())-3:] != ".md" {
+			return nil, errors.New("only accept .md file extension")
+		}
 		post, err := getPost(fileSystem, f.Name())
 		if err != nil {
-			return nil, err // todo: needs clarification, should we totally fail if one file fails? or just ignore?
+			return nil, err
 		}
 		posts = append(posts, post)
 	}
